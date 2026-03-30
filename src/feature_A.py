@@ -1,3 +1,5 @@
+# Code taken from exercise session 05_Feature_Extraction
+
 import cv2
 import numpy as np
 from math import floor, ceil, nan, pi

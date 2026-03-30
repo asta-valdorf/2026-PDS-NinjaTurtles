@@ -1,3 +1,5 @@
+# Code taken from exercise session 05_Feature_Extraction
+
 import numpy as np
 from math import nan
 from scipy.spatial import ConvexHull
