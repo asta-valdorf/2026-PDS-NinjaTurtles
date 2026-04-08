@@ -43,7 +43,7 @@ def features_csv(meta_data , data_path):
         metadata_path = data_path + meta_data
         metadata = pd.read_csv(metadata_path)
 
-        metadata["cancerous"] = metadata["diagnostic"].isin(["BCC", "MEL", "SCC"])
+        metadata["cancerous"] = metadata["diagnostic"].isin(["BCC", "MEL", "SCC"]).astype(int)
 
         # Filter to only rows where the mask file actually exists
         mask_path = data_path + "masks/"
