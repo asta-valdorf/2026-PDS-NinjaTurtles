@@ -1,8 +1,6 @@
 import numpy as np
-import cv2
 
 # Asymmetri-function - "Is taking all spots into account, so for multiple spots, the asymmetri-score will be inaccurate!!!"
-
 def asymmetry_np_centroid(mask):
     ''' 
     -Input: Mask of a skin lesion

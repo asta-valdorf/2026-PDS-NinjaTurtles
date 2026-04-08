@@ -75,10 +75,10 @@ def features_csv(meta_data , data_path):
         feats = {
             "img_id": img_id,
             "cancerous": diagnostic,
-            "asymmetry_mean": mean_asymmetry_score_center_pic, #A1 - Center picture
-            "asymmetry_np_centroid" : asymmetry_score_np, #A2 - Center lesion
-            "border_convex": border_convex, #B1 Convex 
-            "border_contours": border_contours, #B2 Centroid
+            "asymmetry_mean": mean_asymmetry_score_center_pic, #A1 - Center of picture
+            "asymmetry_np_centroid" : asymmetry_score_np, #A2 - Center of lesion
+            "border_convex": border_convex, #B1 - Convex 
+            "border_contours": border_contours, #B2 - Centroid
             "color": color,
 
         } # notice how the identifying info (eg. img_id etc are not relevant once we have extractd the features)
