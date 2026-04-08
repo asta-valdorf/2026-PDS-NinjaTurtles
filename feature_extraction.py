@@ -17,7 +17,7 @@ data_path = "../data/"
 def features_csv(meta_data , data_path):
     """
     Makes CSV file of skin lesions features (ABC) and wether the skin lesions is cancerous or non-cancerous
-    Skin lesions without corresponding masks, are not accounted for in the features CSV
+    Skin lesions without corresponding masks, are not accounted for in the features.csv
     """
 
     def load_image_and_mask(image_id, data_path = data_path):
