@@ -21,7 +21,7 @@ def border_irregularity(mask):
 
     # if no contours found at all, we return words score = 1 (irregular)
     if not contours:
-        return 1.0
+        return np.nan
     
     # Now we want to find the largers contour, which gives the largest spot if there is multiple (It is easier for the next parts)
     largest_contour = max(contours, key=cv2.contourArea)

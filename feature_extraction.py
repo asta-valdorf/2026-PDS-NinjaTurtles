@@ -1,5 +1,4 @@
-# OBS, code takes approx. 40 minutes to load CSV
-
+# Code taken from exercise session 05_feature_extraction
 import numpy as np
 from skimage.transform import resize
 import matplotlib.pyplot as plt
@@ -16,14 +15,40 @@ data_path = "../data/"
 
 def features_csv(meta_data , data_path):
     """
-    Makes CSV file of skin lesions features (ABC) and wether the skin lesions is cancerous or non-cancerous
-    Skin lesions without corresponding masks, are not accounted for in the features.csv
+    Extracts ABC features from skin lesion images and masks and saves them into a CSV file.
+
+    Loads images and the corresponding masks based on the given metadata.
+    Only images with existing masks are used. For each image we extract the following features:
+        - A1: Mean asymmetry score based on center of image
+        - A2: Asymmetry score based on centroid of lesion
+        - B1: Border convexity score
+        - B2: Border irregularity score
+        - C: Multicolor rate
+
+    Features that couldn't be computed are stored as NaN and will be seen as an empty slot in the CSV file.
+
+    Args:
+        meta_data (str): Filename of dataset (e.g. "metadata.csv").
+        data_path (str): Root path to the location of the dataset.
+        
+    Returns:
+        None: The code loads the CSV file directly into the given datapath
+
+    Notes:
+        Code takes 20-30 minutes to run
     """
 
     def load_image_and_mask(image_id, data_path = data_path):
         """ 
-        Loads single skin lesion image and its corresponding mask
+        Loads single skin lesion image and the corresponding mask.
 
+        Args:
+            image_id (str): Image id taken from the metadata.
+            data_path (str): Root path to the location of the dataset.
+
+        Returns:
+            im: np.ndarray of the loaded image
+            mask: np.ndarray of the loaded mask
         """
         img_path = data_path + "imgs/"
         mask_path = data_path + "masks/"
@@ -33,18 +58,31 @@ def features_csv(meta_data , data_path):
         im = plt.imread(file_im)
         mask = plt.imread(file_mask)
 
-        if mask.ndim == 3:
-            mask = mask[..., 0]
+        if mask.ndim == 3: 
+            mask = mask[..., 0] # Converts RGB mask into grayscale, by only taking first channel
 
         if im.shape[:2] != mask.shape[:2]:
-            mask = resize(mask, im.shape[:2], anti_aliasing=False)
+            mask = resize(mask, im.shape[:2], anti_aliasing=False) # Resize mask dimension to image if they are different
         
         return im, mask
 
     def load_metadata(meta_data, data_path):
+        """
+        Loads the metadata as a pandas dataframe.
+
+        Creates new column, which defines wether a lesion is cancerous or benign in binary values.
+
+        Args:
+            meta_data (str): Filename of the dataset (e.g. "metadata.csv")
+            data_path (str): Root path to the location of the dataset.
+
+        Returns:
+            Dataframe from metadata with column defining cancerous or benign
+        """
         metadata_path = data_path + meta_data
         metadata = pd.read_csv(metadata_path)
 
+        # Labels a cancerous lesion with 1 and a benign lesion with 0
         metadata["cancerous"] = metadata["diagnostic"].isin(["BCC", "MEL", "SCC"]).astype(int)
 
         # Filter to only rows where the mask file actually exists
@@ -58,39 +96,60 @@ def features_csv(meta_data , data_path):
         return metadata
     
     def return_features(row):
+        """
+        Extracts ABC features for each skin lesion image and the corresponding mask.
+        Stores the features in a dictionary
+
+        Args:
+            row (pd.Series): A single row from metadata containing "img_id" and "cancerous"
+        
+        Returns:
+            feats (dict): A dictionary with all extracted features for every skin lesion with a mask
+        """
         img_id = row["img_id"]
         im, mask = load_image_and_mask(img_id, data_path)
         
-        # let's extract the other columns in this row that we're interested in
         diagnostic = row["cancerous"]
 
-        mean_asymmetry_score_center_pic = mean_asymmetry(mask) #A1 - center of picture
-        asymmetry_score_np = asymmetry_np_centroid(mask) #A2 - centroid(center of lesion)
-        border_convex = convexity_score(mask) #B1 - convex
+        mean_asymmetry_score_center_pic = mean_asymmetry(mask) #A1 - Center of cut picture
+        asymmetry_score_np = asymmetry_np_centroid(mask) #A2 - Centroid (center of lesion)
+        border_convex = convexity_score(mask) #B1 - Convexity score
         border_contours = border_irregularity(mask)  #B2 - Centroid (Only taking the largest lesion if multiple)
-        color = get_multicolor_rate2(im , mask) # good rep
+        color = get_multicolor_rate2(im , mask) #C - Difference between dominant colors
         
 
         # computing features
         feats = {
             "img_id": img_id,
             "cancerous": diagnostic,
-            "asymmetry_mean": mean_asymmetry_score_center_pic, #A1 - Center of picture
-            "asymmetry_np_centroid" : asymmetry_score_np, #A2 - Center of lesion
-            "border_convex": border_convex, #B1 - Convex 
-            "border_contours": border_contours, #B2 - Centroid
+            "asymmetry_mean": mean_asymmetry_score_center_pic,
+            "asymmetry_np_centroid" : asymmetry_score_np,
+            "border_convex": border_convex,
+            "border_contours": border_contours,
             "color": color,
 
-        } # notice how the identifying info (eg. img_id etc are not relevant once we have extractd the features)
+        }
 
         return feats
 
-    def make_csv(sampled_dfs , output_dir = "output/"):
-        output_path = os.path.join(output_dir, "features_2.csv")
-        features_df = pd.DataFrame(sampled_dfs.apply(return_features, axis=1).to_list())
+    def make_csv(df , output_dir = "output/"):
+        """
+        Outputs the CSV file with the featues computed for the skin lesions
+
+        Args:
+            df (pd.DataFrame): The dataframe for the given CSV file
+            output_dir (str): The path where the final CSV file should be loaded to
+
+        Returns:
+            The final CSV file with the diagnostic, image id and extracted features
+        """
+        output_path = os.path.join(output_dir, "features.csv")
+        # Apply return_features to each row and collect the results as a list and converts the list into a dataframe
+        features_df = pd.DataFrame(df.apply(return_features, axis=1).to_list())
+
         return features_df.to_csv(output_path, index=True)
     
-    sampled_dfs = load_metadata(meta_data, data_path)
-    make_csv(sampled_dfs , "data/")
+    df = load_metadata(meta_data, data_path)
+    make_csv(df , "data/")
 
 features_csv("metadata.csv" , data_path = "data/")
