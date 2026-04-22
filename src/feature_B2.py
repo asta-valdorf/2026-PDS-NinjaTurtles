@@ -9,24 +9,25 @@ def border_irregularity(mask):
 
     - For contours:
     "RETR_EXTERNAL" only takes the outermost, with ignoring holes inside ()
-    "CHAIN_APPROX_NONE" keeps all contour points for maximum accuracy.
+    "CHAIN_APPROX_NONE" keeps all contour points for maximum accuracy. 
 
-    We then with the larges countour, the border of the lesion, finds the area, finding the compactness and at last find the irreguality score
+    We then find the larges countour, the border of the lesion, finds the area, finding the compactness and at last find the irreguality score
     
     - Output: An irregularity-score from 0(perfect)-1(irregular)
     '''
     # First we find the contours(omkridser)
     contours, _ = cv2.findContours(mask.astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)  # np.uint8 needed for OpenCV
+    # The way it works is, it finds the boundaries of the spots, where it is has value 1(lesion present) at one points, and at the one next to it has 0(not lesion present).
     # the second output "_" is for hierarchy, which is useless with RETR_ETERNAL since it only takes the outermost contour for each spot
 
-    # if no contours found at all, we return words score = 1 (irregular)
+    # If no contours found at all, return nan
     if not contours:
         return np.nan
     
     # Now we want to find the largers contour, which gives the largest spot if there is multiple (It is easier for the next parts)
     largest_contour = max(contours, key=cv2.contourArea)
 
-    # Now we calculate the perimeter. True is to make sure, start and endpoint, is at the same spot
+    # Now we can calculate the perimeter. True is to make sure, start and endpoint, is at the same spot
     perimeter = cv2.arcLength(largest_contour, True)
 
     # And the area of the area/pixels inside the lesion

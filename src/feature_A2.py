@@ -14,7 +14,7 @@ def asymmetry_np_centroid(mask):
     # We use centroid to find the "center of mass", to find the point where to split to 4 quadrants later
     y, x = np.where(mask > 0) # Creating 2 numpy arrays with indices where mask > 0 (lesion present)
 
-    # Guard clause: if mask is empty, return 0 (or np.nan, depending on your preference)
+    # Guard clause3: if mask is empty, return 0 
     if len(x) == 0 or len(y) == 0:
         return np.nan  # or return np.nan
 
