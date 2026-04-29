@@ -8,10 +8,10 @@ def border_irregularity(mask):
     - Input: Mask of a skin lesion
 
     - For contours:
-    "RETR_EXTERNAL" only takes the outermost, with ignoring holes inside ()
+    "RETR_EXTERNAL" only takes the outermost contour, with ignoring holes inside ()
     "CHAIN_APPROX_NONE" keeps all contour points for maximum accuracy. 
 
-    We then find the larges countour, the border of the lesion, finds the area, finding the compactness and at last find the irreguality score
+    We then find the larges countour, the border of the lesion, finds the area, finding the compactness and at last finding the irreguality score
     
     - Output: An irregularity-score from 0(perfect)-1(irregular)
     '''
@@ -30,13 +30,13 @@ def border_irregularity(mask):
     # Now we can calculate the perimeter. True is to make sure, start and endpoint, is at the same spot
     perimeter = cv2.arcLength(largest_contour, True)
 
-    # And the area of the area/pixels inside the lesion
+    # And the area of the pixels inside the lesion
     area = np.sum(mask>0)
 
-    # With the area, we can calculate the compactness : (Perimier^2) / (4*Pi*Area), with 1 being perfect and under 1 being irregular
+    # With the area, we can calculate the compactness : (Perimier^2) / (4*Pi*Area), with 1 being a perfect circle and over 1 being irregular (up to 5)
     compactness = (perimeter * perimeter) / (4 * 3.14159 * area + 1e-6) # 1e-6 is used to avoid division with 0
 
-    # Given lesion can have higher scores than 1, often up to 5, we normalize
+    # Given lesions can have higher scores than 1, up to 5, we normalize to a interval of [0,1]
     irregularity = min(max((compactness-1)/4,0), 1.0)
     
     return irregularity

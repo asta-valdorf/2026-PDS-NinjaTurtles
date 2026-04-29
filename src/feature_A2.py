@@ -14,11 +14,11 @@ def asymmetry_np_centroid(mask):
     # We use centroid to find the "center of mass", to find the point where to split to 4 quadrants later
     y, x = np.where(mask > 0) # Creating 2 numpy arrays with indices where mask > 0 (lesion present)
 
-    # Guard clause3: if mask is empty, return 0 
+    # Safeguard: If the mask is empty, or not loaded properly, return 0 
     if len(x) == 0 or len(y) == 0:
         return np.nan  # or return np.nan
 
-    cx, cy = np.mean(x), np.mean(y) # "c" named after method. Taking the average of x- and y-coordinates which gives the center point (cy = centor-y-coordinate)
+    cx, cy = np.mean(x), np.mean(y) # "c" named after the method. Taking the average of x- and y-coordinates which gives the center point (cy = center-y-coordinate)
     
     # Spliting all mask into 4 quadrants and sum the points
     q1 = mask[:int(cy), :int(cx)].sum() # For each quadrant, slicing is used. So, if :int(cy), :int(cx), 
