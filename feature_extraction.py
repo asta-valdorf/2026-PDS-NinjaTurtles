@@ -2,6 +2,7 @@
 import numpy as np
 from skimage.transform import resize
 import matplotlib.pyplot as plt
+from tqdm import tqdm
 import pandas as pd
 import os
 
@@ -144,10 +145,23 @@ def features_csv(meta_data , data_path):
             The final CSV file with the diagnostic, image id and extracted features
         """
         output_path = os.path.join(output_dir, "features.csv")
-        # Apply return_features to each row and collect the results as a list and converts the list into a dataframe
-        features_df = pd.DataFrame(df.apply(return_features, axis=1).to_list())
 
-        return features_df.to_csv(output_path, index=True)
+        results = []
+
+        # Manual tqdm loop
+        for _, row in tqdm(
+            df.iterrows(),
+            total=len(df),
+            desc="Extracting features"
+        ):
+
+            results.append(return_features(row))
+
+
+        # Apply return_features to each row and collect the results as a list and converts the list into a dataframe
+        features_df = pd.DataFrame(results)
+
+        return features_df.to_csv(output_path, index=False)
     
     df = load_metadata(meta_data, data_path)
     make_csv(df , "data/")
