@@ -6,9 +6,7 @@ from tqdm import tqdm
 import pandas as pd
 import os
 
-#from src.feature_A1 import mean_asymmetry
 from src.feature_A import asymmetry_np_centroid
-#from src.feature_B1 import convexity_score
 from src.feature_B import border_irregularity
 from src.feature_C import get_multicolor_rate2
 
@@ -112,9 +110,7 @@ def features_csv(meta_data , data_path):
         
         diagnostic = row["cancerous"]
 
-        #mean_asymmetry_score_center_pic = mean_asymmetry(mask) #A1 - Center of cut picture
         asymmetry_score_np = asymmetry_np_centroid(mask) #A2 - Centroid (center of lesion)
-        #border_convex = convexity_score(mask) #B1 - Convexity score
         border_contours = border_irregularity(mask)  #B2 - Centroid (Only taking the largest lesion if multiple)
         color = get_multicolor_rate2(im , mask) #C - Difference between dominant colors
         
@@ -123,9 +119,7 @@ def features_csv(meta_data , data_path):
         feats = {
             "img_id": img_id,
             "cancerous": diagnostic,
-            #"asymmetry_mean": mean_asymmetry_score_center_pic,
             "asymmetry_np_centroid" : asymmetry_score_np,
-            #"border_convex": border_convex,
             "border_contours": border_contours,
             "color": color,
 
