@@ -49,7 +49,7 @@ def features_csv(meta_data , data_path):
             im: np.ndarray of the loaded image
             mask: np.ndarray of the loaded mask
         """
-        img_path = data_path + "imgs/"
+        img_path = data_path + "imgs_clean/"
         mask_path = data_path + "masks/"
 
         file_im = img_path + image_id
@@ -138,7 +138,7 @@ def features_csv(meta_data , data_path):
         Returns:
             The final CSV file with the diagnostic, image id and extracted features
         """
-        output_path = os.path.join(output_dir, "features.csv")
+        output_path = os.path.join(output_dir, "clean_features.csv")
 
         results = []
 
