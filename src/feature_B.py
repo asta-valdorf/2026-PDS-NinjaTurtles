@@ -36,7 +36,8 @@ def border_irregularity(mask):
     # With the area, we can calculate the compactness : (Perimier^2) / (4*Pi*Area), with 1 being a perfect circle and over 1 being irregular (up to 5)
     compactness = (perimeter * perimeter) / (4 * 3.14159 * area + 1e-6) # 1e-6 is used to avoid division with 0
 
+    ## DON'T NORMALIZE - changes values such that some become "perfect" and we scale later in classifers ##
     # Given lesions can have higher scores than 1, up to 5, we normalize to a interval of [0,1]
-    irregularity = min(max((compactness-1)/4,0), 1.0)
+    #irregularity = min(max((compactness-1)/4,0), 1.0)
     
-    return irregularity
+    return compactness
