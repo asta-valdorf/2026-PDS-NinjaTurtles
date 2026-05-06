@@ -8,7 +8,10 @@ def border_irregularity(mask):
     - Input: Mask of a skin lesion
 
     - For contours:
-    "RETR_EXTERNAL" only takes the outermost contour, with ignoring holes inside ()
+    "RETR_EXTERNAL" only takes the outermost contour, with ignoring holes inside (). 
+        Without it, a hole in a lesion is also counted as a contour and can lead to complications, 
+        so we use this to only take the outer contour, the boundary of the lesion.
+
     "CHAIN_APPROX_NONE" keeps all contour points for maximum accuracy. 
 
     We then find the larges countour, the border of the lesion, finds the area, finding the compactness and at last finding the irreguality score
@@ -17,7 +20,7 @@ def border_irregularity(mask):
     '''
     # First we find the contours(omkridser)
     contours, _ = cv2.findContours(mask.astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)  # np.uint8 needed for OpenCV
-    # The way it works is, it finds the boundaries of the spots, where it is has value 1(lesion present) at one points, and at the one next to it has 0(not lesion present).
+    # The way it works is, it finds the boundaries of the spots, where it has value 1(lesion present) at one place, and at the one next to it has 0(not lesion present).
     # the second output "_" is for hierarchy, which is useless with RETR_ETERNAL since it only takes the outermost contour for each spot
 
     # If no contours found at all, return nan
