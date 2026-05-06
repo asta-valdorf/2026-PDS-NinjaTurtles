@@ -6,9 +6,9 @@ from tqdm import tqdm
 import pandas as pd
 import os
 
-from src.feature_A import asymmetry_np_centroid
-from src.feature_B import border_irregularity
-from src.feature_C import get_multicolor_rate2
+from feature_A import asymmetry_np_centroid
+from feature_B import border_irregularity
+from feature_C import get_multicolor_rate2
 
 data_path = "../data/"
 
