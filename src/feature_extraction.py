@@ -9,6 +9,7 @@ import os
 from feature_A import asymmetry_np_centroid
 from feature_B import border_irregularity
 from feature_C import get_multicolor_rate2
+from open_question import lbp_features
 
 data_path = "../data/"
 
@@ -113,7 +114,7 @@ def features_csv(meta_data , data_path):
         asymmetry_score_np = asymmetry_np_centroid(mask) #A2 - Centroid (center of lesion)
         border_contours = border_irregularity(mask)  #B2 - Centroid (Only taking the largest lesion if multiple)
         color = get_multicolor_rate2(im , mask) #C - Difference between dominant colors
-        
+        lbp_uniform, lbp_complex = lbp_features(im, mask)
 
         # computing features
         feats = {
@@ -122,7 +123,8 @@ def features_csv(meta_data , data_path):
             "asymmetry_np_centroid" : asymmetry_score_np,
             "border_contours": border_contours,
             "color": color,
-
+            "lbp_uniform": lbp_uniform,
+            "lbp_complex": lbp_complex,
         }
 
         return feats
@@ -138,7 +140,7 @@ def features_csv(meta_data , data_path):
         Returns:
             The final CSV file with the diagnostic, image id and extracted features
         """
-        output_path = os.path.join(output_dir, "clean_features.csv")
+        output_path = os.path.join(output_dir, "features.csv")
 
         results = []
 
