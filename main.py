@@ -94,7 +94,7 @@ def main(features_path, prediction_results_path, model_path, load_model):
             "rf__n_estimators": [200, 500],
             "rf__max_depth": [2, 4 , 6, 8, 10],
             "rf__min_samples_leaf": [1, 5],
-            "rf__max_features": ["sqrt"]
+            "rf__max_features": [1,2,3]
         }
 
         grid_search_rf = GridSearchCV(
