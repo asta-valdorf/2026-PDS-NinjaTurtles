@@ -3,12 +3,12 @@
 ### Required Folder Structure
 ```
 2026-PDS_NinjaTurtles
-├── data/
-│   ├── annotations_combined.csv         # annotations of hair and penmarks
+├── data/                               
+│   ├── annotations_combined.csv        # annotations of hair and penmarks
 │   ├── features.csv
+│   ├── metadata.csv                    # metadata is assumed to be inside data/
 │   ├── imgs/                           # skin images of type png
 │   └── masks/                          # mask images of type png
-
 ├── src/
 │   ├── __init__.py
 │   ├── feature_A.py
